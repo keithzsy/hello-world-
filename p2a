@@ -1,0 +1,139 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels.api as sm
+sns.set()
+
+
+df = pd.read_csv(r'C:\Users\KZH\Desktop\p2amodel\P2A_data.csv', sep=';', index_col='Date', parse_dates=[1])
+df.drop(df.columns[0], axis=1, inplace=True)
+
+p2a = df['P2A']
+
+
+'''
+##daily
+resample_method = 'B'
+resample_period = 250
+resample_harmonics = 100
+
+
+target = p2a.resample(resample_method).mean()/1000
+
+
+unobserve_model1 = {
+            'level': 'local linear trend',
+            'irregular': True,
+            #'cycle' : True,
+            #'damped_cycle' : True,
+            'freq_seasonal': [{'period': resample_period, 'harmonics': resample_harmonics}],
+            'stochastic_freq_seasonal': [True],
+            'autoregressive' : 5,
+            'freq': resample_method
+        }
+
+mod_ll = sm.tsa.UnobservedComponents(target, **unobserve_model1)
+result = mod_ll.fit(method='powell', disp=False)
+result.plot_components()
+result.plot_diagnostics()
+plt.tight_layout()
+plt.show()
+'''
+
+
+
+
+
+###weekly
+resample_method = 'W'
+target = (p2a.resample(resample_method).mean()/1000)
+reality = target.iloc[-5:,]
+target = target.iloc[:-5,]
+
+with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+    print(p2a.isnull().sum())
+    print(target.isnull().sum())
+    print(target)
+    print(reality)
+
+resample_period = 52
+resample_harmonics = 10
+
+unobserve_model1 = {
+            'level': 'local linear trend',
+            #'irregular': True,
+            #'cycle' : True,
+            #'damped_cycle' : True,
+            'freq_seasonal': [{'period': resample_period, 'harmonics': resample_harmonics}],
+            'stochastic_freq_seasonal': [True],
+            'autoregressive' : 5,
+            'freq': resample_method
+        }
+
+mod_ll = sm.tsa.UnobservedComponents(target, **unobserve_model1)
+result = mod_ll.fit(method='powell', disp=False)
+
+step = len(reality)
+pred = result.forecast(step)
+
+
+pred.plot(label = "prediction")
+reality.plot(label = "reality")
+plt.legend()
+plt.show()
+
+
+def rolling_pred(cut, resample_method = "W"):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+result.plot_components()
+result.plot_diagnostics()
+plt.tight_layout()
+plt.show()
+'''
+
+
+
+
+'''
+with pd.option_context('display.max_rows', 150, 'display.max_columns', None):
+    print(df)
+    print(p2a)
+
+p2a.plot(title = 'P2A')
+plt.show()
+'''
